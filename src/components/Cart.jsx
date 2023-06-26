@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import { Container, Box, Typography, Button, Table } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { setCartItems } from "../slices/cartSlice";
@@ -10,34 +9,63 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { collection, deleteDoc, doc, getDocs, query } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 const Cart = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const backToMain = () => {
-    navigate("/main");
+  const { user } = useSelector((state) => state.auth);
+  const productsCollectionRef = collection(db, "cart");
+
+  const getCartItem = async () => {
+    try {
+      if (user) {
+        const data = await getDocs(query(productsCollectionRef));
+        console.log(data);
+
+        const filteredData = data.docs
+          .map((doc) => ({
+            documentId: doc.id,
+            ...doc.data(),
+          }))
+          .filter((item) => item.userId === user.uid);
+
+        dispatch(setCartItems(filteredData));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const savedCartItems = JSON.parse(localStorage.getItem("cartItems"));
-  const removeFromCart = (itemId) => {
-    // Получение текущего массива cartItems из localStorage
-    // const savedCartItems = JSON.parse(localStorage.getItem("cartItems"));
+  useEffect(() => {
+    if (user) {
+      getCartItem();
+    }
+  }, [user]);
 
-    // Фильтрация элементов по id для удаления
-    const updatedCartItems = savedCartItems.filter(
-      (item) => item.id !== itemId
+  const deleteProductFromCart = async (documentId) => {
+    dispatch(
+      setCartItems(cartItems.filter((item) => item.documentId !== documentId))
     );
-
-    // Сохранение обновленного массива cartItems в localStorage
-    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-
-    // Обновление состояния корзины в Redux, если требуется
-    dispatch(setCartItems(updatedCartItems));
+    try {
+      // console.log(db);
+      const productDoc = doc(db, "cart", documentId);
+      await deleteDoc(productDoc);
+      // getProducts();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const totalAmount = savedCartItems.reduce((acc, item) => acc + item.price, 0);
+  const totalAmount =
+    cartItems.length > 0
+      ? cartItems.reduce((acc, item) => acc + item.price, 0)
+      : 0;
+
+  console.log(cartItems);
 
   return (
     <Container>
@@ -52,20 +80,28 @@ const Cart = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {cartItems.map((item) => (
-              <TableRow
-                key={item.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {item.name}
-                </TableCell>
-                <TableCell align="right">{item.price} USD</TableCell>
-                <TableCell align="right">{item.color}</TableCell>
-                <TableCell align="right">{item.size}</TableCell>
-                <Button onClick={() => removeFromCart(item.id)}>Delete</Button>
-              </TableRow>
-            ))}
+            {cartItems && cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <TableRow
+                  key={item.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {item.name}
+                  </TableCell>
+                  <TableCell align="right">{item.price} USD</TableCell>
+                  <TableCell align="right">{item.color}</TableCell>
+                  <TableCell align="right">{item.size}</TableCell>
+                  <Button
+                    onClick={() => deleteProductFromCart(item.documentId)}
+                  >
+                    Delete
+                  </Button>
+                </TableRow>
+              ))
+            ) : (
+              <></>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

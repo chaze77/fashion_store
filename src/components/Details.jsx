@@ -1,11 +1,4 @@
-import {
-  Container,
-  ToggleButton,
-  ToggleButtonGroup,
-  Select,
-  MenuItem,
-  Box,
-} from "@mui/material";
+import { Container, Select, MenuItem, Box } from "@mui/material";
 import React, { useState } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -17,6 +10,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setCartItems } from "../slices/cartSlice";
 import { setError } from "../slices/authSlice";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../config/firebase";
 
 const Details = () => {
   const params = useParams();
@@ -51,7 +46,7 @@ const Details = () => {
     dispatch(setError(null)); // Сброс ошибки
   };
 
-  const addToCart = () => {
+  const addToCart = async () => {
     if (!isChoosen) {
       const newItem = {
         id: cardToShow.id,
@@ -67,8 +62,16 @@ const Details = () => {
       const updatedCartItems = [...cartItems, newItem];
       dispatch(setCartItems(updatedCartItems));
 
-      // Сохранение в localStorage
-      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+      const cartRef = collection(db, "cart");
+      try {
+        await addDoc(cartRef, newItem);
+        console.log("Товар успешно добавлен в корзину Firestore");
+      } catch (error) {
+        console.error(
+          "Ошибка при добавлении товара в корзину Firestore:",
+          error
+        );
+      }
 
       navigate("/main/cart");
     } else {
