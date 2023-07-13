@@ -1,0 +1,13 @@
+.btn {
+  color: red;
+  background-color: white;
+}
+
+.btn:hover {
+  color: aqua;
+  background-color: black;
+}
+
+.tab {
+  border: 1px solid red;
+}

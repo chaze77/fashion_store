@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
+
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Tooltip from "@mui/material/Tooltip";
@@ -11,7 +12,7 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { useDispatch, useSelector } from "react-redux";
 import { auth } from "../config/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { setUser, resetUser } from "../slices/authSlice";
+import { setUser, resetUser, setAuthStatus } from "../slices/authSlice";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { List, MenuItem, Typography } from "@mui/material";
@@ -29,7 +30,7 @@ const pages = [
 ];
 
 function Header() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, authStatus } = useSelector((state) => state.auth);
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ function Header() {
   const logout = async () => {
     await signOut(auth);
     dispatch(resetUser(user));
+    dispatch(setAuthStatus(false));
     navigate("/login");
   };
 

@@ -77,6 +77,7 @@ const Cart = () => {
               <TableCell align="right">Price</TableCell>
               <TableCell align="right">Color</TableCell>
               <TableCell align="right">Size</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -92,11 +93,13 @@ const Cart = () => {
                   <TableCell align="right">{item.price} USD</TableCell>
                   <TableCell align="right">{item.color}</TableCell>
                   <TableCell align="right">{item.size}</TableCell>
-                  <Button
-                    onClick={() => deleteProductFromCart(item.documentId)}
-                  >
-                    Delete
-                  </Button>
+                  <TableCell align="right">
+                    <Button
+                      onClick={() => deleteProductFromCart(item.documentId)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
