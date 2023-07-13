@@ -8,12 +8,16 @@ import {
   setPassword,
   setError,
   resetForm,
+  setAuthStatus,
 } from "../slices/authSlice";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import "./style.css";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { email, password, error } = useSelector((state) => state.auth);
+  const { email, password, error, authStatus } = useSelector(
+    (state) => state.auth
+  );
 
   const navigate = useNavigate();
 
@@ -30,6 +34,7 @@ const Login = () => {
       .then((userCredential) => {
         const user = userCredential.user;
         console.log("Singed in user: ", user);
+        dispatch(setAuthStatus(true));
         navigate("/main");
       })
       .catch((error) => {
@@ -39,6 +44,7 @@ const Login = () => {
       });
     dispatch(resetForm());
   };
+  console.log(authStatus);
 
   console.log(auth?.currentUser?.email);
   return (
@@ -81,6 +87,7 @@ const Login = () => {
         sx={{ width: { xl: 400, l: 350, md: 300 }, marginBottom: "20px" }}
         variant="contained"
         onClick={handleLogin}
+        className="btn"
       >
         Login
       </Button>

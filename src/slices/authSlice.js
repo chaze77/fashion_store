@@ -6,6 +6,7 @@ const initialState = {
   error: "",
   user: null,
   isAdmin: false,
+  authStatus: false,
 };
 
 const authSlice = createSlice({
@@ -32,6 +33,9 @@ const authSlice = createSlice({
       state.isAdmin =
         state.user?.uid === "hppnVNQfU0eed2DsslZtXahEhUj1" ? true : false;
     },
+    setAuthStatus: (state, action) => {
+      state.authStatus = action.payload;
+    },
     resetUser: (state) => {
       state.user = "";
     },
@@ -45,6 +49,7 @@ export const {
   resetForm,
   setUser,
   resetUser,
+  setAuthStatus,
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import AddProductModal from "./AddProductModal";
+import "./style.css";
 
 const Main = () => {
   const productsCollectionRef = query(collection(db, "products"));
@@ -92,14 +93,14 @@ const Main = () => {
           onChange={handleTabChange}
           aria-label="basic tabs example"
         >
-          <Tab label="all" value="all" />
-          <Tab label="hoodies" value="Hoodies" />
-          <Tab label="t-shirts" value="T-Shirts" />
-          <Tab label="suits" value="Suits" />
-          <Tab label="shoes" value="Shoes" />
-          <Tab label="jeans" value="Jeans" />
-          <Tab label="jackets" value="Jackets" />
-          <Tab label="bags" value="Bags" />
+          <Tab className="tab" label="all" value="all" />
+          <Tab className="tab" label="hoodies" value="Hoodies" />
+          <Tab className="tab" label="t-shirts" value="T-Shirts" />
+          <Tab className="tab" label="suits" value="Suits" />
+          <Tab className="tab" label="shoes" value="Shoes" />
+          <Tab className="tab" label="jeans" value="Jeans" />
+          <Tab className="tab" label="jackets" value="Jackets" />
+          <Tab className="tab" label="bags" value="Bags" />
         </Tabs>
       </Box>
 
